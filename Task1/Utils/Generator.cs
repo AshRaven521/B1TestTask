@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Task1.Models;
 
@@ -73,8 +74,39 @@ namespace Task1.Utils
                     string resString = $"{i}. {custom}";
 
                     sw.WriteLine(resString);
+
                 }
+                //Parallel.For(1, maxFileLength, (i, state) =>
+                //{
+                //    int delay = 0;
+
+                //    if (state.ShouldExitCurrentIteration == true)
+                //    {
+                //        if (state.LowestBreakIteration < i)
+                //        {
+                //            return;
+                //        }
+                //    }
+
+                //    lock(random)
+                //    {
+                //        delay = random.Next(1, 1001);
+                //    }
+                //    Thread.Sleep(delay);
+
+                //    custom.RandomDate = GetRandomDate();
+                //    custom.RandomDoubleNumber = GetRandomDoubleNumber();
+                //    custom.RandomLatinLetters = GetRandomLatinString();
+                //    custom.RandomNumber = GetRandomNumber();
+                //    custom.RandomRussianLetters = GetRandomRussianString();
+
+                //    string resString = $"{i}. {custom}";
+
+                //    sw.WriteLine(resString);
+                //});
+
             }
+            //Thread.Sleep(10);
 
             return true;
         }
@@ -93,7 +125,15 @@ namespace Task1.Utils
             for (int i = 1; i <= maxFilesCount; i++)
             {
                 filePath = folderPath + "/" + $"File № {i}.txt";
-                var isDone = GenerateFile(myStr, filePath);
+                //var isDone = GenerateFile(myStr, filePath);
+                Thread fileThread = new Thread(() => GenerateFile(myStr, filePath));
+                fileThread.Name = i.ToString();
+                fileThread.Start();
+                Thread.Sleep(150);
+                //Parallel.For(1, maxFilesCount, (myStr, filePath) =>
+                //{
+                //    GenerateFile();
+                //});
             }
             watch.Stop();
 
