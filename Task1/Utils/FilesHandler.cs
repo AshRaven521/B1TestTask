@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Task1.Models;
 
 namespace Task1.Utils
@@ -15,14 +12,30 @@ namespace Task1.Utils
         private static readonly int maxFileLength = 100000;
         private static readonly int maxFilesCount = 100;
 
-        public static bool JoinFiles(string folderPath, string resFilePath)
+
+
+        public static void JoinFiles(string folderPath, string resFilePath, string toDeleteOption, Callbacks.joinFilesCallback joinFilesCallback)
         {
             var files = Directory.GetFiles(folderPath).Where(f => f != resFilePath);
+
+            int deletedStrings = 0;
 
             using (var stream = new StreamWriter(resFilePath, false, new UTF8Encoding()))
             {
                 foreach (var fileName in files)
                 {
+                    string tempFile = string.Empty;
+                    using (var sr = new StreamReader(fileName, new UTF8Encoding()))
+                    {
+                        tempFile = Path.GetTempFileName();
+
+                        var line = sr.ReadToEnd().Split('\n').ToList();
+                        deletedStrings = DeleteFromFile(line, tempFile, toDeleteOption);
+                    }
+
+                    File.Delete(fileName);
+                    File.Move(tempFile, fileName);
+
                     using (var sr = new StreamReader(fileName, new UTF8Encoding()))
                     {
                         sr.BaseStream.CopyTo(stream.BaseStream);
@@ -30,60 +43,30 @@ namespace Task1.Utils
                 }
             }
 
+            joinFilesCallback(deletedStrings);
+
             //Return true if everything goes ok
-            return true;
+            //return Tuple.Create(true, deletedStrings);
         }
 
-        public static List<List<string>> SearchInFile(string searchParameter, string filePath)
+        //public static Tuple<bool, int> JoinFilesAsync(string folderPath, string resFilePath, string toDeleteOption)
+        //{
+        //    Thread joinFilesThread = new Thread(() => JoinFiles(folderPath, resFilePath, toDeleteOption));
+        //    joinFilesThread.Start();
+
+        //}
+
+        private static int DeleteFromFile(List<string> data, string tempFile, string stringToDelete)
         {
-            List<List<string>> groups = new List<List<string>>();
-            List<string> current = null;
-            var lines = File.ReadAllLines(filePath);
-            foreach (var line in lines)
-            {
-                if (line.Contains(searchParameter) && current == null)
-                {
-                    current = new List<string>();
-                }
-                else if (line.Contains(searchParameter) && current != null)
-                {
-                    groups.Add(current);
-                    current = null;
-                }
-                if (current != null)
-                {
-                    current.Add(line);
-                }
-            }
-
-
-            return groups;
-        }
-
-        public static int DeleteFromFile(string filePath, string stringToDelete)
-        {
-            var tempFile = Path.GetTempFileName();
-            //var test = SearchInFile(stringToDelete, filePath);
-            //foreach (var tes in test)
-            //{
-            //    foreach (var t in tes)
-            //    {
-            //        var temp = t;
-            //    }
-            //}
-            var lines = File.ReadLines(filePath);
-            var linesToKeep = lines.Where(l => !l.Contains(stringToDelete));
-            int deletedLinesCount = lines.Count() - linesToKeep.Count();
+            var linesToKeep = data.Where(l => !l.Contains(stringToDelete));
+            int deletedLinesCount = data.Count() - linesToKeep.Count();
 
             File.WriteAllLines(tempFile, linesToKeep);
-
-            File.Delete(filePath);
-            File.Move(tempFile, filePath);
 
             return deletedLinesCount;
         }
 
-        public static void GenerateFile(CustomString custom, string filePath)
+        private static void GenerateFile(CustomString custom, string filePath)
         {
             using (var sw = new StreamWriter(filePath))
             {
@@ -101,6 +84,18 @@ namespace Task1.Utils
 
                 }
             }
+        }
+
+        public static void GenerateAllFiles(CustomString custom, string folderPath, Callbacks.generateFilesCallback callback)
+        {
+            string filePath = string.Empty;
+            for (int i = 1; i <= maxFilesCount; i++)
+            {
+                filePath = folderPath + "/" + $"File № {i}.txt";
+                GenerateFile(custom, filePath);
+            }
+
+            callback();
         }
 
         public static bool GenerateFiles(CustomString myStr, string folderPath)
@@ -142,10 +137,11 @@ namespace Task1.Utils
 
             //    }
 
-            //    if (Interlocked.Increment(ref completed) == maxFilesCount)
-            //    {
-            //        allDone.Set();
-            //    }
+            //    //if (Interlocked.Increment(ref completed) == maxFilesCount)
+            //    //{
+            //    //    allDone.Set();
+            //    //}
+            //    allDone.Set();
             //});
 
             //allDone.WaitOne();
@@ -205,17 +201,22 @@ namespace Task1.Utils
             // 5-ый вариант, без ничего(убрать везде async/await)
             // Генерирует хорошие значения, выполняется 19 - 24 секунды
 
-            string filePath = string.Empty;
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
+            //string filePath = string.Empty;
+            //if (!Directory.Exists(folderPath))
+            //{
+            //    Directory.CreateDirectory(folderPath);
+            //}
 
-            for (int i = 1; i <= maxFilesCount; i++)
-            {
-                filePath = folderPath + "/" + $"File № {i}.txt";
-                GenerateFile(myStr, filePath);
-            }
+            //for (int i = 1; i <= maxFilesCount; i++)
+            //{
+            //    filePath = folderPath + "/" + $"File № {i}.txt";
+            //    GenerateFile(myStr, filePath);
+            //}
+
+            //6-ой вариант (1 поток на создание всех файлов)
+
+            //Thread th = new Thread(() => GenerateAllFiles(myStr, folderPath));
+            //th.Start();
 
             //Возвращает true, если функция выполнена успешно
             return true;
