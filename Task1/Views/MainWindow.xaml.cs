@@ -1,20 +1,10 @@
-﻿using Microsoft.Win32;
+﻿using Microsoft.VisualBasic;
+using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Task1.Models;
 using Task1.Utils;
 
@@ -30,36 +20,59 @@ namespace Task1
         private string folderWithFilesPath = string.Empty;
         private string resultFilePath = string.Empty;
 
+        
+        private Callbacks callbacks;
+
+        private Stopwatch watcher;
+        //private delegate void joinFilesCallback(int result);
+
         public MainWindow()
         {
             InitializeComponent();
 
             customString = new CustomString();
 
-            
+            callbacks = new Callbacks();
+
+            watcher = new Stopwatch();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        public void JoinFilesDone(int result)
         {
+            watcher.Stop();
+            MessageBox.Show($"Объединение файлов произошло успешно!" +
+                        $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд" +
+                        $"\nУдалено строк: {result}", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
+        public void GenerateFilesDone()
+        {
+            watcher.Stop();
+            MessageBox.Show($"Файлы созданы успешно!" +
+                $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд", 
+                "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void beginFilesGenerationButton_Click(object sender, RoutedEventArgs e)
         {
+            Callbacks.generateFilesCallback generateFilesCallback = new Callbacks.generateFilesCallback(GenerateFilesDone);
+
             if (Directory.Exists(folderWithFilesPath))
             {
-                var watcher = new Stopwatch();
-
+                //var watcher = new Stopwatch();
+                watcher.Restart();
                 try
                 {
-                    
-                    watcher.Start();
-                    FilesHandler.GenerateFiles(customString, folderWithFilesPath);
-                    watcher.Stop();
-                    MessageBox.Show($"Файлы созданы успешно!\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    //watcher.Start();
+                    //FilesHandler.GenerateFiles(customString, folderWithFilesPath);
+                    Thread generateFilesThread = new Thread(() => FilesHandler.GenerateAllFiles(customString, folderWithFilesPath, generateFilesCallback));
+                    generateFilesThread.Start();
+                    //watcher.Stop();
+                    //MessageBox.Show($"Файлы созданы успешно!\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     watcher.Stop();
                     MessageBox.Show($"Произошла ошибка при создании файлов!\nОшибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -77,20 +90,28 @@ namespace Task1
 
         private void concatFilesButton_Click(object sender, RoutedEventArgs e)
         {
+            var text = Interaction.InputBox("Хотите ввести часть строки, которые будут удалены из файла?");
+
+            Callbacks.joinFilesCallback callback = new Callbacks.joinFilesCallback(JoinFilesDone);
+
             if (Directory.Exists(folderWithFilesPath))
             {
-                var watcher = new Stopwatch();
-                watcher.Start();
-                var res = FilesHandler.JoinFiles(folderWithFilesPath, resultFilePath);
-                watcher.Stop();
-                if (res == true)
-                {
-                    MessageBox.Show($"Объединение файлов произошло успешно!\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    MessageBox.Show("Произошла ошибка при объединении файлов!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                //var watcher = new Stopwatch();
+                watcher.Restart();
+                Thread joinFilesThread = new Thread(() => FilesHandler.JoinFiles(folderWithFilesPath, resultFilePath, text, callback));
+                joinFilesThread.Start();
+                //var (isGood, deletedStrings) = FilesHandler.JoinFiles(folderWithFilesPath, resultFilePath, text);
+                //watcher.Stop();
+                //if (isGood == true)
+                //{
+                //    MessageBox.Show($"Объединение файлов произошло успешно!" +
+                //        $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд" +
+                //        $"\nУдалено строк: {deletedStrings}", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                //}
+                //else
+                //{
+                //    MessageBox.Show("Произошла ошибка при объединении файлов!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                //}
 
             }
 
@@ -102,12 +123,12 @@ namespace Task1
 
         private void searchButton_Click(object sender, RoutedEventArgs e)
         {
-            string searchParameter = searchStringTextBox.Text;
+            //string searchParameter = searchStringTextBox.Text;
             if (File.Exists(resultFilePath))
             {
                 //var groups = FilesHandler.SearchInFile(searchParameter, resultFilePath);
-                int deletedLines = FilesHandler.DeleteFromFile(resultFilePath, searchParameter);
-                MessageBox.Show($"Было удалено: {deletedLines} строк", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                //int deletedLines = FilesHandler.DeleteFromFile(resultFilePath, searchParameter);
+                //MessageBox.Show($"Было удалено: {deletedLines} строк", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
