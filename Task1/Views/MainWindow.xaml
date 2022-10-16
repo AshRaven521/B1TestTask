@@ -6,39 +6,40 @@
         xmlns:local="clr-namespace:Task1"
         mc:Ignorable="d"
         Title="B1Task1" 
-        Height="450" 
-        Width="800"
+        Height="400" 
+        Width="350"
         Background="#01b8ed"
         FontSize="14"
-        FontFamily="Times New Roman">
-    <Grid>
+        FontFamily="Times New Roman" 
+        Icon="/Views/main.png">
+    <Grid Margin="0,0,0,4">
         <Button 
             Content="Запустить создание файлов"
             HorizontalAlignment="Left"
-            Margin="246,18,0,0"
+            Margin="34,70,0,0"
             VerticalAlignment="Top"
             Background="#013c85 "
             Foreground="Wheat"
             Cursor="Hand" 
             Name="beginFilesGenerationButton"
             Click="beginFilesGenerationButton_Click"
-            Width="191"/>
+            Width="277"/>
         <Button 
             Content="Запустить объединение файлов"
             HorizontalAlignment="Left"
-            Margin="461,18,0,0"
+            Margin="34,117,0,0"
             VerticalAlignment="Top"
             Background="#013c85 "
             Foreground="Wheat"
             Cursor="Hand" 
             x:Name="concatFilesButton"
-            Click="concatFilesButton_Click"/>
+            Click="concatFilesButton_Click" Width="277"/>
         <Label 
             Content="(Итоговый файл: " 
             HorizontalAlignment="Left" 
-            Margin="34,50,0,0" 
+            Margin="34,43,0,0" 
             VerticalAlignment="Top" 
-            Height="28"
+            Height="24"
             Visibility="Hidden"
             Name="searchInfoLabel"/>
         <Button 
@@ -51,7 +52,35 @@
             Cursor="Hand" 
             Name="selectResultFile"
             Click="selectResultFile_Click" 
-            Width="191"/>
+            Width="277"/>
+        <Button 
+            Content="Импортировать итоговый файл в базу данных"
+            HorizontalAlignment="Left"
+            Margin="34,160,0,0"
+            VerticalAlignment="Top"
+            Background="#013c85 "
+            Foreground="Wheat"
+            Cursor="Hand" 
+            Name="importToDBButton"
+            Click="importToDBButton_Click"/>
 
+        <ProgressBar 
+            Margin="34,217,39,133"
+            Name="importToDBProgressBar"
+            Visibility="Hidden"/>
+
+        <Label 
+            Content="Строк импортировано: " 
+            HorizontalAlignment="Left" 
+            Margin="34,186,0,0" 
+            VerticalAlignment="Top"
+            Name="importProgressLabel"
+            Visibility="Hidden"/>
+        <Label 
+            Content="" 
+            HorizontalAlignment="Left" 
+            Margin="184,186,0,0"
+            VerticalAlignment="Top" 
+            Name="importProgressValueLabel"/>
     </Grid>
 </Window>
