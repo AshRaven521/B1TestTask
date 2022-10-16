@@ -12,7 +12,7 @@ namespace Task1.Models
 
         public override string ToString()
         {
-            return $"{RandomDate}||{RandomLatinLetters}||{RandomRussianLetters}||{RandomNumber}||{RandomDoubleNumber}||";
+            return $"{RandomDate.ToString("yyyy.MM.dd")}||{RandomLatinLetters}||{RandomRussianLetters}||{RandomNumber}||{RandomDoubleNumber}||";
         }
     }
 }
