@@ -7,6 +7,8 @@ using System.Threading;
 using System.Windows;
 using Task1.Models;
 using Task1.Utils;
+using Task1.Data;
+using System.Threading.Tasks;
 
 namespace Task1
 {
@@ -20,7 +22,12 @@ namespace Task1
         private string folderWithFilesPath = string.Empty;
         private string resultFilePath = string.Empty;
 
-        
+        private readonly int maxFileLength = 100000;
+        private readonly int maxFilesCount = 100;
+        private double progressBarSteps = 0.0;
+
+        private int resFileLength = 0;
+
         private Callbacks callbacks;
 
         private Stopwatch watcher;
@@ -53,24 +60,33 @@ namespace Task1
                 "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        public void ImportToDBDone(int lines)
+        {
+            Dispatcher.Invoke(() => importToDBProgressBar.Value++);
+            Dispatcher.Invoke(() => importProgressValueLabel.Content = lines.ToString());
+
+            if (lines >= resFileLength - 10000)
+            {
+                watcher.Stop();
+                MessageBox.Show($"Импорт в базу данных завершен успешно!" +
+                    $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд" +
+                    $"\nСтрок импортировано: {lines}",
+                    "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+        }
+
         private void beginFilesGenerationButton_Click(object sender, RoutedEventArgs e)
         {
             Callbacks.generateFilesCallback generateFilesCallback = new Callbacks.generateFilesCallback(GenerateFilesDone);
 
             if (Directory.Exists(folderWithFilesPath))
             {
-                //var watcher = new Stopwatch();
                 watcher.Restart();
                 try
                 {
-
-                    //watcher.Start();
-                    //FilesHandler.GenerateFiles(customString, folderWithFilesPath);
                     Thread generateFilesThread = new Thread(() => FilesHandler.GenerateAllFiles(customString, folderWithFilesPath, generateFilesCallback));
                     generateFilesThread.Start();
-                    //watcher.Stop();
-                    //MessageBox.Show($"Файлы созданы успешно!\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-
                 }
                 catch (Exception ex)
                 {
@@ -96,43 +112,14 @@ namespace Task1
 
             if (Directory.Exists(folderWithFilesPath))
             {
-                //var watcher = new Stopwatch();
                 watcher.Restart();
                 Thread joinFilesThread = new Thread(() => FilesHandler.JoinFiles(folderWithFilesPath, resultFilePath, text, callback));
                 joinFilesThread.Start();
-                //var (isGood, deletedStrings) = FilesHandler.JoinFiles(folderWithFilesPath, resultFilePath, text);
-                //watcher.Stop();
-                //if (isGood == true)
-                //{
-                //    MessageBox.Show($"Объединение файлов произошло успешно!" +
-                //        $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000} секунд" +
-                //        $"\nУдалено строк: {deletedStrings}", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-                //}
-                //else
-                //{
-                //    MessageBox.Show("Произошла ошибка при объединении файлов!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                //}
-
             }
 
             else
             {
                 MessageBox.Show("Не выбрана директория с итоговым файлом!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void searchButton_Click(object sender, RoutedEventArgs e)
-        {
-            //string searchParameter = searchStringTextBox.Text;
-            if (File.Exists(resultFilePath))
-            {
-                //var groups = FilesHandler.SearchInFile(searchParameter, resultFilePath);
-                //int deletedLines = FilesHandler.DeleteFromFile(resultFilePath, searchParameter);
-                //MessageBox.Show($"Было удалено: {deletedLines} строк", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("Нет итогового файла для поиска!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -151,6 +138,33 @@ namespace Task1
                 folderWithFilesPath = System.IO.Path.GetDirectoryName(resultFilePath);
                 searchInfoLabel.Content += $"{resultFilePath} )";
                 searchInfoLabel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private async void importToDBButton_Click(object sender, RoutedEventArgs e)
+        {
+            Callbacks.insertIntoDB dbCallback = new Callbacks.insertIntoDB(ImportToDBDone);
+            progressBarSteps = maxFileLength * maxFilesCount / 10000;
+            if (Directory.Exists(folderWithFilesPath))
+            {
+
+                var stringsList = await Task.Run(() => FilesHandler.GetCustomsFromFile(resultFilePath));
+                resFileLength = stringsList.Count;
+
+                importToDBProgressBar.Visibility = Visibility.Visible;
+                importProgressLabel.Visibility = Visibility.Visible;
+                importToDBProgressBar.Value = 1;
+                importToDBProgressBar.Minimum = 1;
+                importToDBProgressBar.Maximum = progressBarSteps;
+
+                watcher.Restart();
+
+                Thread importToDBThread = new Thread(() => DB.InsertIntoDB(stringsList, dbCallback));
+                importToDBThread.Start();
+            }
+            else
+            {
+                MessageBox.Show("Не выбрана директория с итоговым файлом!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
