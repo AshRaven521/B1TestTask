@@ -45,7 +45,7 @@ namespace Task1.Utils
             DateTime start = today.AddYears(-5);
             int range = (today - start).Days;
 
-            return start.AddDays(random.Next(range)).Date;
+            return start.AddDays(random.Next(range)).ToLocalTime();
         }
 
 
