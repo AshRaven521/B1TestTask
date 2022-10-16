@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,12 +15,23 @@ namespace Task1.Utils
 
 
 
+        public static List<string> GetCustomsFromFile(string filePath)
+        {
+            List<string> list = new List<string>();
+            using (var sr = new StreamReader(filePath))
+            {
+                list = sr.ReadToEnd().Split('\n').ToList();
+            }
+
+            return list;
+        }
+
         public static void JoinFiles(string folderPath, string resFilePath, string toDeleteOption, Callbacks.joinFilesCallback joinFilesCallback)
         {
             var files = Directory.GetFiles(folderPath).Where(f => f != resFilePath);
 
             int deletedStrings = 0;
-
+            IEnumerable<string> linesToKeep;
             using (var stream = new StreamWriter(resFilePath, false, new UTF8Encoding()))
             {
                 foreach (var fileName in files)
@@ -29,8 +41,32 @@ namespace Task1.Utils
                     {
                         tempFile = Path.GetTempFileName();
 
-                        var line = sr.ReadToEnd().Split('\n').ToList();
-                        deletedStrings = DeleteFromFile(line, tempFile, toDeleteOption);
+                        var lines = sr.ReadToEnd().Split('\n').ToList();
+                        if (!string.IsNullOrEmpty(toDeleteOption) || !string.IsNullOrWhiteSpace(toDeleteOption))
+                        {
+                            (deletedStrings, linesToKeep) = DeleteFromFile(lines, toDeleteOption);
+                            File.WriteAllLines(tempFile, linesToKeep);
+                            //using (var sw = new StreamWriter(tempFile, false, new UTF8Encoding()))
+                            //{
+                            //    //sr.BaseStream.CopyTo(sw.BaseStream);
+                            //    foreach (var lk in linesToKeep)
+                            //    {
+                            //        sw.WriteLine(lk);
+                            //    }
+                            //}
+                        }
+                        else
+                        {
+                            File.WriteAllLines(tempFile, lines);
+                            //using (var sw = new FileStream(tempFile, FileAccess.Write))
+                            //{
+                            //    //sr.BaseStream.CopyTo(sw.BaseStream);
+                            //    foreach (var l in lines)
+                            //    {
+
+                            //    }
+                            //}
+                        }
                     }
 
                     File.Delete(fileName);
@@ -49,21 +85,12 @@ namespace Task1.Utils
             //return Tuple.Create(true, deletedStrings);
         }
 
-        //public static Tuple<bool, int> JoinFilesAsync(string folderPath, string resFilePath, string toDeleteOption)
-        //{
-        //    Thread joinFilesThread = new Thread(() => JoinFiles(folderPath, resFilePath, toDeleteOption));
-        //    joinFilesThread.Start();
-
-        //}
-
-        private static int DeleteFromFile(List<string> data, string tempFile, string stringToDelete)
+        private static Tuple<int, IEnumerable<string>> DeleteFromFile(List<string> data, string stringToDelete)
         {
             var linesToKeep = data.Where(l => !l.Contains(stringToDelete));
             int deletedLinesCount = data.Count() - linesToKeep.Count();
 
-            File.WriteAllLines(tempFile, linesToKeep);
-
-            return deletedLinesCount;
+            return Tuple.Create(deletedLinesCount, linesToKeep);
         }
 
         private static void GenerateFile(CustomString custom, string filePath)
@@ -78,7 +105,7 @@ namespace Task1.Utils
                     custom.RandomNumber = Generator.GetRandomNumber();
                     custom.RandomRussianLetters = Generator.GetRandomRussianString();
 
-                    string resString = $"{i}. {custom}";
+                    string resString = $"{custom}";
 
                     sw.WriteLine(resString);
 
@@ -100,6 +127,8 @@ namespace Task1.Utils
 
         public static bool GenerateFiles(CustomString myStr, string folderPath)
         {
+
+            /* Несколько приведенных мною способов для создания файлов(просто жалко удалять) */
 
             //const int chunkSize = 10;
 
