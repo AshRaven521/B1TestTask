@@ -220,7 +220,7 @@ namespace Task1
             doublesMedianValueLabel.Content = doublesMedian;
 
             MessageBox.Show($"Рассчет суммы средних и медианы дробных завершен успешно!" +
-                    $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000 / 60} минут",
+                    $"\nПонадобилось времени: {watcher.ElapsedMilliseconds / 1000 } секунд",
                     "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
