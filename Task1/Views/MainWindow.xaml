@@ -23,7 +23,7 @@
             Cursor="Hand" 
             Name="beginFilesGenerationButton"
             Click="beginFilesGenerationButton_Click"
-            Width="277"/>
+            Width="280"/>
         <Button 
             Content="Запустить объединение файлов"
             HorizontalAlignment="Left"
@@ -33,7 +33,7 @@
             Foreground="Wheat"
             Cursor="Hand" 
             x:Name="concatFilesButton"
-            Click="concatFilesButton_Click" Width="277"/>
+            Click="concatFilesButton_Click" Width="280"/>
         <Label 
             Content="(Итоговый файл: " 
             HorizontalAlignment="Left" 
@@ -52,7 +52,7 @@
             Cursor="Hand" 
             Name="selectResultFile"
             Click="selectResultFile_Click" 
-            Width="277"/>
+            Width="280"/>
         <Button 
             Content="Импортировать итоговый файл в базу данных"
             HorizontalAlignment="Left"
@@ -62,10 +62,10 @@
             Foreground="Wheat"
             Cursor="Hand" 
             Name="importToDBButton"
-            Click="importToDBButton_Click"/>
+            Click="importToDBButton_Click" Width="280"/>
 
         <ProgressBar 
-            Margin="34,217,39,133"
+            Margin="34,217,36,133"
             Name="importToDBProgressBar"
             Visibility="Hidden"/>
 
@@ -82,5 +82,44 @@
             Margin="184,186,0,0"
             VerticalAlignment="Top" 
             Name="importProgressValueLabel"/>
+        <Button 
+            Content="Посчитать сумму средних и медиану дробных"
+            HorizontalAlignment="Left"
+            Margin="34,260,0,0"
+            VerticalAlignment="Top"
+            Background="#013c85 "
+            Foreground="Wheat"
+            Cursor="Hand" 
+            Name="calculateValuesButton"
+            Click="calculateValuesButton_Click"/>
+        <Label 
+            Content="Сумма целых: " 
+            HorizontalAlignment="Left" 
+            Margin="34,285,0,0" 
+            VerticalAlignment="Top" 
+            Height="26"
+            Name="numbersSumLabel"
+            Visibility="Hidden"/>
+        <Label 
+            Content="" 
+            HorizontalAlignment="Left" 
+            Margin="132,285,0,0" 
+            VerticalAlignment="Top" 
+            Height="26"
+            Name="numbersSumValueLabel"/>
+        <Label 
+            Content=""
+            HorizontalAlignment="Left" 
+            Margin="160,311,0,0"
+            VerticalAlignment="Top"
+            Name="doublesMedianValueLabel"/>
+        <Label 
+            Content="Медиана дробных: " 
+            HorizontalAlignment="Left" 
+            Margin="34,311,0,0" 
+            VerticalAlignment="Top"
+            Name="doublesMedianLabel"
+            Visibility="Hidden"/>
+
     </Grid>
 </Window>
