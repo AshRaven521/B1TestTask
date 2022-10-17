@@ -7,6 +7,9 @@ using Task1.Models;
 
 namespace Task1.Utils
 {
+    /// <summary>
+    /// Class that responsible for work with file in programm
+    /// </summary>
     public static class FilesHandler
     {
 
@@ -14,7 +17,11 @@ namespace Task1.Utils
         private static readonly int maxFilesCount = 100;
 
 
-
+        /// <summary>
+        /// Function that get data from file
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns> List of strings from file </returns>
         public static List<string> GetCustomsFromFile(string filePath)
         {
             List<string> list = new List<string>();
@@ -25,7 +32,13 @@ namespace Task1.Utils
 
             return list;
         }
-
+        /// <summary>
+        /// Function that join all files from given folder except result file
+        /// </summary>
+        /// <param name="folderPath"> Path to folder with result file </param>
+        /// <param name="resFilePath"> Path to result file </param>
+        /// <param name="toDeleteOption"> Option that shows what strings delete from files </param>
+        /// <param name="joinFilesCallback"> Delegate calling when files joined </param>
         public static void JoinFiles(string folderPath, string resFilePath, string toDeleteOption, Callbacks.joinFilesCallback joinFilesCallback)
         {
             var files = Directory.GetFiles(folderPath).Where(f => f != resFilePath);
@@ -46,26 +59,10 @@ namespace Task1.Utils
                         {
                             (deletedStrings, linesToKeep) = DeleteFromFile(lines, toDeleteOption);
                             File.WriteAllLines(tempFile, linesToKeep);
-                            //using (var sw = new StreamWriter(tempFile, false, new UTF8Encoding()))
-                            //{
-                            //    //sr.BaseStream.CopyTo(sw.BaseStream);
-                            //    foreach (var lk in linesToKeep)
-                            //    {
-                            //        sw.WriteLine(lk);
-                            //    }
-                            //}
                         }
                         else
                         {
                             File.WriteAllLines(tempFile, lines);
-                            //using (var sw = new FileStream(tempFile, FileAccess.Write))
-                            //{
-                            //    //sr.BaseStream.CopyTo(sw.BaseStream);
-                            //    foreach (var l in lines)
-                            //    {
-
-                            //    }
-                            //}
                         }
                     }
 
@@ -81,10 +78,13 @@ namespace Task1.Utils
 
             joinFilesCallback(deletedStrings);
 
-            //Return true if everything goes ok
-            //return Tuple.Create(true, deletedStrings);
         }
-
+        /// <summary>
+        /// Delete strings that contains given parametr from given list of string
+        /// </summary>
+        /// <param name="data"> Source list with data from file </param>
+        /// <param name="stringToDelete"> Option based on which function will delete string or not </param>
+        /// <returns> Collection that contains files strings except of strings that contain given parametr </returns>
         private static Tuple<int, IEnumerable<string>> DeleteFromFile(List<string> data, string stringToDelete)
         {
             var linesToKeep = data.Where(l => !l.Contains(stringToDelete));
@@ -92,7 +92,11 @@ namespace Task1.Utils
 
             return Tuple.Create(deletedLinesCount, linesToKeep);
         }
-
+        /// <summary>
+        /// Function that generate file with given CustomString object
+        /// </summary>
+        /// <param name="custom"> Custom string object that will write in a file </param>
+        /// <param name="filePath"> Path where file need to be created </param>
         private static void GenerateFile(CustomString custom, string filePath)
         {
             using (var sw = new StreamWriter(filePath))
@@ -112,7 +116,12 @@ namespace Task1.Utils
                 }
             }
         }
-
+        /// <summary>
+        /// Function that generate 100 files
+        /// </summary>
+        /// <param name="custom"> CustomString object that will be send to GenerateFile function </param>
+        /// <param name="folderPath"> Path to folder with all files </param>
+        /// <param name="callback"> Delegate calling when all files created</param>
         public static void GenerateAllFiles(CustomString custom, string folderPath, Callbacks.generateFilesCallback callback)
         {
             string filePath = string.Empty;
@@ -124,7 +133,13 @@ namespace Task1.Utils
 
             callback();
         }
-
+        /// <summary>
+        /// Function that shows my pain)
+        /// I don't want to delete it because here shows how I experemented with different variants of generating file
+        /// </summary>
+        /// <param name="myStr"></param>
+        /// <param name="folderPath"></param>
+        /// <returns></returns>
         public static bool GenerateFiles(CustomString myStr, string folderPath)
         {
 
