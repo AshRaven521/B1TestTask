@@ -50,8 +50,8 @@
             Background="#013c85 "
             Foreground="Wheat"
             Cursor="Hand" 
-            Name="selectResultFile"
-            Click="selectResultFile_Click" 
+            Name="selectResultFileButton"
+            Click="selectResultFileButton_Click" 
             Width="280"/>
         <Button 
             Content="Импортировать итоговый файл в базу данных"
