@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Task2.Model.Files;
 using Task2.Service;
@@ -9,6 +11,7 @@ using Task2.Utils;
 
 namespace Task2.Controllers
 {
+    [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class FilesController : ControllerBase
@@ -61,6 +64,10 @@ namespace Task2.Controllers
             }
 
             var (balanceList, csList) = ExcelUtil.FillModels(newPath, addedFileId);
+            //var resultcs = csList.OrderBy(s => s.ExcelRowNumber);
+            //var resultbalance = balanceList.OrderBy(s => s.ExcelRowNumber);
+            //var res = resultcs.ToList().Concat(resultbalance.ToList());
+            //var res = csList.SelectMany(x => balanceList.Select(y => new { Balance = }))
             try
             {
                 await balanceService.InsertBalancesAsync(balanceList);
