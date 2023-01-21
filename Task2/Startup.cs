@@ -1,18 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Task2.Data;
+using Task2.Repository;
+using Task2.Service;
 
 namespace Task2
 {
@@ -30,6 +25,19 @@ namespace Task2
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(connectionString));
+
+            services.AddScoped<IBalanceRepository, BalanceRepository>();
+            services.AddScoped<IBalanceService, BalanceService>();
+
+            services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IFileService, FileService>();
+
+            //services.AddScoped<ICountRepository, CountRepository>();
+            //services.AddScoped<ICountService, CountService>();
+
+            services.AddScoped<ICustomStringRepository, CustomStringRepository>();
+            services.AddScoped<ICustomStringService, CustomStringService>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
