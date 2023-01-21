@@ -77,45 +77,5 @@ namespace Task2.Utils
             }
         }
 
-        public static List<Count> FillCountModelFromExcel(string path)
-        {
-            try
-            {
-                HSSFWorkbook hssfwb;
-                using (FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    hssfwb = new HSSFWorkbook(file);
-                }
-
-                ISheet sheet = hssfwb.GetSheetAt(0);
-
-                var countList = new List<Count>();
-
-                for (int i = 0; i <= sheet.LastRowNum; i++)
-                {
-                    var row = sheet.GetRow(i);
-                    if (row != null) //null is when the row only contains empty cells 
-                    {
-                        string cellValue = row.GetCell(0).ToString();
-                        bool isNumericCell = decimal.TryParse(cellValue, out decimal result);
-                        if (isNumericCell)
-                        {
-                            var count = new Count
-                            {
-                                Number = Convert.ToInt32(cellValue)
-                            };
-
-                            countList.Add(count);
-                        }
-                    }
-                }
-
-                return countList;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
     }
 }
