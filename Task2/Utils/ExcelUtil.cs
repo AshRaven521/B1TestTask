@@ -76,6 +76,5 @@ namespace Task2.Utils
                 throw;
             }
         }
-
     }
 }
