@@ -1,17 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Task2.Model;
+using Task2.Model.Files;
 
 namespace Task2.Data
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<Count> Counts { get; set; }
+        //public DbSet<Count> Counts { get; set; }
         public DbSet<Balance> Balances { get; set; }
+        public DbSet<FileDetails> FileDetails { get; set; }
+        public DbSet<CustomString> CustomStrings { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -30,7 +29,13 @@ namespace Task2.Data
                 property.SetScale(2);
             }
 
-            //builder.Entity<Balance>().HasOne(b => b.)
+            //builder.Entity<Balance>().HasOne(b => b.Count).WithOne().HasForeignKey<Balance>(a => a.Count);
+            //builder.Entity<Balance>().HasOne(b => b.File).WithOne().HasForeignKey<FileDetails>(a => a.BalanceId);
+            //builder.Entity<FileDetails>().HasOne(b => b.Balance).WithOne().HasForeignKey<Balance>(a => a.FileId);
+            //builder.Entity<FileDetails>().HasOne(c => c.CustomString).WithOne().HasForeignKey<CustomString>(b => b.FileId);
+            builder.Entity<FileDetails>().HasMany<Balance>().WithOne().HasForeignKey(a => a.FileId);
+            builder.Entity<FileDetails>().HasMany<CustomString>().WithOne().HasForeignKey(a => a.FileId);
+
         }
     }
 }
