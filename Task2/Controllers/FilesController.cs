@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Task2.Model.Files;
 using Task2.Service;
@@ -11,8 +8,7 @@ using Task2.Utils;
 
 namespace Task2.Controllers
 {
-    //[EnableCors]
-    [Route("api/[controller]")]
+    [Route("api/files")]
     [ApiController]
     public class FilesController : ControllerBase
     {
@@ -26,14 +22,14 @@ namespace Task2.Controllers
             this.balanceService = balanceService;
             this.csService = csService;
         }
-        //[EnableCors("MyPolicy")]
+
         [HttpGet("files-names")]
         public async Task<IActionResult> GetFilesNames()
         {
             var files = await fileService.GetFileNames();
             return Ok(files);
         }
-        //[EnableCors("MyPolicy")]
+
         [HttpGet("file-by-id")]
         public async Task<IActionResult> GetFileById(int fileId)
         {
@@ -43,9 +39,10 @@ namespace Task2.Controllers
             }
 
             var file = await fileService.GetFileByIdAsync(fileId);
-            return Ok(file.FileData);
+            var balances = balanceService.GetBalancesByFileId(fileId);
+            return Ok(balances);
         }
-        //[EnableCors()]
+
         [HttpPost("single-file")]
         public async Task<IActionResult> PostSingleFile([FromForm] FileUploaded file)
         {
@@ -63,31 +60,28 @@ namespace Task2.Controllers
                 throw;
             }
 
-            string newPath = FileUtil.MapPath(file.FileDetails.FileName);
-            using (var stream = new MemoryStream())
-            {
-                file.FileDetails.CopyTo(stream);
-                FileUtil.FillFile(newPath, stream.ToArray());
-            }
+            var fileStream = file.FileDetails.OpenReadStream();
+            var (balanceList, csList) = ExcelUtil.FillModels(fileStream, addedFileId);
 
-            var (balanceList, csList) = ExcelUtil.FillModels(newPath, addedFileId);
-            //var resultcs = csList.OrderBy(s => s.ExcelRowNumber);
-            //var resultbalance = balanceList.OrderBy(s => s.ExcelRowNumber);
-            //var res = resultcs.ToList().Concat(resultbalance.ToList());
-            //var res = csList.SelectMany(x => balanceList.Select(y => new { Balance = }))
             try
             {
                 await balanceService.InsertBalancesAsync(balanceList);
                 await csService.InsertCustomStringsAsync(csList);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
 
-            return Ok();
+            var simple = new SimpleFile
+            {
+                Id = addedFileId,
+                FileName = file.FileDetails.FileName
+            };
+
+            return Ok(simple);
         }
-        //[EnableCors("MyPolicy")]
+
         [HttpPost("multiple-files")]
         public async Task<IActionResult> PostMultipleFile([FromForm] List<FileUploaded> fileDetails)
         {
@@ -106,7 +100,7 @@ namespace Task2.Controllers
                 throw;
             }
         }
-        //[EnableCors("MyPolicy")]
+
         [HttpGet("download-file")]
         public async Task<IActionResult> DownloadFile(int id)
         {
