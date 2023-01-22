@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.Net;
 using Task2.Data;
 using Task2.Repository;
 using Task2.Service;
@@ -32,9 +33,6 @@ namespace Task2
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileService, FileService>();
 
-            //services.AddScoped<ICountRepository, CountRepository>();
-            //services.AddScoped<ICountService, CountService>();
-
             services.AddScoped<ICustomStringRepository, CustomStringRepository>();
             services.AddScoped<ICustomStringService, CustomStringService>();
 
@@ -46,8 +44,13 @@ namespace Task2
                 builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
-
             }));
+
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+                options.HttpsPort = 5001;
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

@@ -11,7 +11,7 @@ using Task2.Utils;
 
 namespace Task2.Controllers
 {
-    //[EnableCors("MyPolicy")]
+    //[EnableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class FilesController : ControllerBase
@@ -45,7 +45,7 @@ namespace Task2.Controllers
             var file = await fileService.GetFileByIdAsync(fileId);
             return Ok(file.FileData);
         }
-        //[EnableCors("MyPolicy")]
+        //[EnableCors()]
         [HttpPost("single-file")]
         public async Task<IActionResult> PostSingleFile([FromForm] FileUploaded file)
         {
