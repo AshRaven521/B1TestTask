@@ -11,7 +11,7 @@ using Task2.Utils;
 
 namespace Task2.Controllers
 {
-    [EnableCors("MyPolicy")]
+    //[EnableCors("MyPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class FilesController : ControllerBase
