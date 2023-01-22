@@ -38,6 +38,13 @@ namespace Task2
             services.AddScoped<ICustomStringRepository, CustomStringRepository>();
             services.AddScoped<ICustomStringService, CustomStringService>();
 
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.WithOrigins("http://locolhost:5000", "https://localhost:5001")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
