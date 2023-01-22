@@ -1,5 +1,4 @@
 ﻿using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,19 +12,19 @@ namespace Task2.Utils
         /// Create tuple of list of balance models and list of custom strings models from excel file
         /// </summary>
         /// <param name="path"> Path to excel file </param>
-        /// <returns> Data table </returns>
-        public static Tuple<List<Balance>, List<CustomString>> FillModels(string path, int fileId)
+        /// <returns> Tuple of two lists : balance models list and custom string models list </returns>
+        public static Tuple<List<Balance>, List<CustomString>> FillModels(Stream stream, int fileId)
         {
             try
             {
                 HSSFWorkbook hssfwb;
-                using (var file = new FileStream(path, FileMode.Open, FileAccess.Read))
-                {
-                    hssfwb = new HSSFWorkbook(file);
-                }
-                FileUtil.DeleteTempFile(path);
 
-                ISheet sheet = hssfwb.GetSheetAt(0);
+                using (stream)
+                {
+                    hssfwb = new HSSFWorkbook(stream);
+                }
+
+                var sheet = hssfwb.GetSheetAt(0);
 
                 var balanceList = new List<Balance>();
                 var csList = new List<CustomString>();
@@ -33,7 +32,7 @@ namespace Task2.Utils
                 for (int i = 0; i <= sheet.LastRowNum; i++)
                 {
                     var row = sheet.GetRow(i);
-                    if (row != null) //null is when the row only contains empty cells 
+                    if (row != null) //null кода все ячейки пустые 
                     {
                         string cellValue = row.GetCell(0).ToString();
                         bool isNumericCell = decimal.TryParse(cellValue, out decimal result);
@@ -41,7 +40,6 @@ namespace Task2.Utils
                         {
                             var balance = new Balance();
                             // Используем приведение к double, а потом к нужному типу, что избежать упаковки/распаковки
-                            //balance.Id++;
                             balance.CountId = Convert.ToInt32(cellValue);
                             balance.FileId = fileId;
                             balance.InputActive = Convert.ToDecimal(row.GetCell(1).NumericCellValue);
@@ -57,7 +55,6 @@ namespace Task2.Utils
                         else
                         {
                             var cs = new CustomString();
-                            //cs.Id++;
                             cs.FileId = fileId;
                             cs.ExcelRowNumber = i;
                             cs.Content = row.GetCell(0).ToString();
