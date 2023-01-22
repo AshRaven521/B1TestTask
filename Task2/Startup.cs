@@ -38,11 +38,15 @@ namespace Task2
             services.AddScoped<ICustomStringRepository, CustomStringRepository>();
             services.AddScoped<ICustomStringService, CustomStringService>();
 
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
-                builder.WithOrigins("http://localhost:3000")
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
+                //builder.WithOrigins("http://localhost:3000")
+                //       .AllowAnyMethod()
+                //       .AllowAnyHeader();
+                builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+
             }));
 
             services.AddControllers();
@@ -66,7 +70,7 @@ namespace Task2
 
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
