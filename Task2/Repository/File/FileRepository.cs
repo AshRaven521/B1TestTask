@@ -100,5 +100,11 @@ namespace Task2.Repository
             var file = await context.FileDetails.FindAsync(id);
             return file;
         }
+
+        public async Task<IEnumerable<SimpleFile>> GetFileNames()
+        {
+            var files = await context.FileDetails.Select(x => new SimpleFile { Id = x.Id, FileName = x.FileName} ).ToListAsync();
+            return files;
+        }
     }
 }

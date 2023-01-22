@@ -14,5 +14,7 @@ namespace Task2.Service
         public Task DownloadFileById(int fileName);
 
         public Task<FileDetails> GetFileByIdAsync(int id);
+
+        public Task<IEnumerable<SimpleFile>> GetFileNames();
     }
 }

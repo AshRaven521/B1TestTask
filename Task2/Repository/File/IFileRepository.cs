@@ -15,5 +15,7 @@ namespace Task2.Repository
 
         public Task<FileDetails> GetFileByIdAsync(int id);
 
+        public Task<IEnumerable<SimpleFile>> GetFileNames();
+
     }
 }

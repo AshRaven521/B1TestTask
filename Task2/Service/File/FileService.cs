@@ -24,6 +24,11 @@ namespace Task2.Service
             return await repository.GetFileByIdAsync(id);
         }
 
+        public async Task<IEnumerable<SimpleFile>> GetFileNames()
+        {
+            return await repository.GetFileNames();
+        }
+
         public async Task<int> PostFileAsync(IFormFile fileData, FileType fileType)
         {
             return await repository.PostFileAsync(fileData, fileType);
