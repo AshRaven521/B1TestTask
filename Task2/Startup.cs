@@ -46,11 +46,11 @@ namespace Task2
                         .AllowAnyHeader();
             }));
 
-            services.AddHttpsRedirection(options =>
-            {
-                options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
-                options.HttpsPort = 5001;
-            });
+            //services.AddHttpsRedirection(options =>
+            //{
+            //    options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
+            //    options.HttpsPort = 5001;
+            //});
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
