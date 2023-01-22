@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Task2.Data;
 using Task2.Model;
@@ -24,6 +25,12 @@ namespace Task2.Repository
         {
             var balance = await context.Balances.FindAsync(id);
             return balance;
+        }
+
+        public IQueryable<Balance> GetBalancesByFileId(int fileId)
+        {
+            var balances = context.Balances.AsQueryable().Where(x => x.FileId == fileId).OrderBy(s => s.ExcelRowNumber);
+            return balances;
         }
 
         public async Task<IEnumerable<Balance>> GetBalancesAsync()
