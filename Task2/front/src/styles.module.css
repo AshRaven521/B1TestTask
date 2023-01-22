@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tools {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 252px;
+  overflow-y: auto;
+}
+
+.file:hover {
+  cursor: pointer;
+}
+
+.dnd_zone {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dnd_zone > label {
+  min-height: 200px;
+}
