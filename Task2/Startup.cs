@@ -40,7 +40,7 @@ namespace Task2
 
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
-                builder.WithOrigins("http://locolhost:5000", "https://localhost:5001")
+                builder.WithOrigins("http://localhost:5000", "https://localhost:5001")
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
