@@ -26,14 +26,14 @@ namespace Task2.Controllers
             this.balanceService = balanceService;
             this.csService = csService;
         }
-
+        [EnableCors("MyPolicy")]
         [HttpGet("files-names")]
         public async Task<IActionResult> GetFilesNames()
         {
             var files = await fileService.GetFileNames();
             return Ok(files);
         }
-
+        [EnableCors("MyPolicy")]
         [HttpGet("file-by-id")]
         public async Task<IActionResult> GetFileById(int fileId)
         {
@@ -45,7 +45,7 @@ namespace Task2.Controllers
             var file = await fileService.GetFileByIdAsync(fileId);
             return Ok(file.FileData);
         }
-
+        [EnableCors("MyPolicy")]
         [HttpPost("single-file")]
         public async Task<IActionResult> PostSingleFile([FromForm] FileUploaded file)
         {
@@ -87,7 +87,7 @@ namespace Task2.Controllers
 
             return Ok();
         }
-
+        [EnableCors("MyPolicy")]
         [HttpPost("multiple-files")]
         public async Task<IActionResult> PostMultipleFile([FromForm] List<FileUploaded> fileDetails)
         {
@@ -106,7 +106,7 @@ namespace Task2.Controllers
                 throw;
             }
         }
-
+        [EnableCors("MyPolicy")]
         [HttpGet("download-file")]
         public async Task<IActionResult> DownloadFile(int id)
         {
