@@ -66,7 +66,7 @@ namespace Task2
 
             app.UseRouting();
 
-            app.UseCors("MyPolicy");
+            app.UseCors();
 
             app.UseAuthorization();
 
