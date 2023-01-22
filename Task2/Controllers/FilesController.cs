@@ -27,7 +27,14 @@ namespace Task2.Controllers
             this.csService = csService;
         }
 
-        [HttpGet("get-file-by-id")]
+        [HttpGet("files-names")]
+        public async Task<IActionResult> GetFilesNames()
+        {
+            var files = await fileService.GetFileNames();
+            return Ok(files);
+        }
+
+        [HttpGet("file-by-id")]
         public async Task<IActionResult> GetFileById(int fileId)
         {
             if (fileId < 1)
@@ -39,7 +46,7 @@ namespace Task2.Controllers
             return Ok(file.FileData);
         }
 
-        [HttpPost("post-single-file")]
+        [HttpPost("single-file")]
         public async Task<IActionResult> PostSingleFile([FromForm] FileUploaded file)
         {
             if (file == null)
@@ -81,7 +88,7 @@ namespace Task2.Controllers
             return Ok();
         }
 
-        [HttpPost("post-multiple-file")]
+        [HttpPost("multiple-files")]
         public async Task<IActionResult> PostMultipleFile([FromForm] List<FileUploaded> fileDetails)
         {
             if (fileDetails == null)
