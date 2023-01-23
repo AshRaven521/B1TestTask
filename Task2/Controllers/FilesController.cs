@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Task2.Model.Files;
 using Task2.Service;
@@ -38,8 +37,7 @@ namespace Task2.Controllers
                 return BadRequest();
             }
 
-            var file = await fileService.GetFileByIdAsync(fileId);
-            var balances = balanceService.GetBalancesByFileId(fileId);
+            var balances = await balanceService.GetBalancesByFileId(fileId);
             return Ok(balances);
         }
 
@@ -80,25 +78,6 @@ namespace Task2.Controllers
             };
 
             return Ok(simple);
-        }
-
-        [HttpPost("multiple-files")]
-        public async Task<IActionResult> PostMultipleFile([FromForm] List<FileUploaded> fileDetails)
-        {
-            if (fileDetails == null)
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                await fileService.PostMultipleFileAsync(fileDetails);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
         }
 
         [HttpGet("download-file")]

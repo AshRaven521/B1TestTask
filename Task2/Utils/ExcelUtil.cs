@@ -9,10 +9,11 @@ namespace Task2.Utils
     public static class ExcelUtil
     {
         /// <summary>
-        /// Create tuple of list of balance models and list of custom strings models from excel file
+        /// Создает кортеж из двух списоков : список объектов модели Balance и список объектов модели CustomString из excel файла
         /// </summary>
-        /// <param name="path"> Path to excel file </param>
-        /// <returns> Tuple of two lists : balance models list and custom string models list </returns>
+        /// <param name="stream"> Поток байт excel файла </param>
+        /// <param name="fileId"> id execel файла </param>
+        /// <returns></returns>
         public static Tuple<List<Balance>, List<CustomString>> FillModels(Stream stream, int fileId)
         {
             try
@@ -38,26 +39,30 @@ namespace Task2.Utils
                         bool isNumericCell = decimal.TryParse(cellValue, out decimal result);
                         if (isNumericCell)
                         {
-                            var balance = new Balance();
-                            // Используем приведение к double, а потом к нужному типу, что избежать упаковки/распаковки
-                            balance.CountId = Convert.ToInt32(cellValue);
-                            balance.FileId = fileId;
-                            balance.InputActive = Convert.ToDecimal(row.GetCell(1).NumericCellValue);
-                            balance.InputPassive = Convert.ToDecimal(row.GetCell(2).NumericCellValue);
-                            balance.Debit = Convert.ToDecimal(row.GetCell(3).NumericCellValue);
-                            balance.Credit = Convert.ToDecimal(row.GetCell(4).NumericCellValue);
-                            balance.OutputActive = Convert.ToDecimal(row.GetCell(5).NumericCellValue);
-                            balance.OutputPassive = Convert.ToDecimal(row.GetCell(6).NumericCellValue);
-                            balance.ExcelRowNumber = i;
+                            var balance = new Balance
+                            {
+                                // Используем приведение к double, а потом к нужному типу, что избежать упаковки/распаковки
+                                CountId = Convert.ToInt32(cellValue),
+                                FileId = fileId,
+                                InputActive = Convert.ToDecimal(row.GetCell(1).NumericCellValue),
+                                InputPassive = Convert.ToDecimal(row.GetCell(2).NumericCellValue),
+                                Debit = Convert.ToDecimal(row.GetCell(3).NumericCellValue),
+                                Credit = Convert.ToDecimal(row.GetCell(4).NumericCellValue),
+                                OutputActive = Convert.ToDecimal(row.GetCell(5).NumericCellValue),
+                                OutputPassive = Convert.ToDecimal(row.GetCell(6).NumericCellValue),
+                                ExcelRowNumber = i
+                            };
 
                             balanceList.Add(balance);
                         }
                         else
                         {
-                            var cs = new CustomString();
-                            cs.FileId = fileId;
-                            cs.ExcelRowNumber = i;
-                            cs.Content = row.GetCell(0).ToString();
+                            var cs = new CustomString
+                            {
+                                FileId = fileId,
+                                ExcelRowNumber = i,
+                                Content = row.GetCell(0).ToString()
+                            };
 
                             csList.Add(cs);
                         }

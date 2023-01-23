@@ -26,10 +26,15 @@ namespace Task2.Repository
             var balance = await context.Balances.FindAsync(id);
             return balance;
         }
-
-        public IQueryable<Balance> GetBalancesByFileId(int fileId)
+        /// <summary>
+        /// Получает список объектов Balance для конкретного файла
+        /// </summary>
+        /// <param name="fileId"> id файла, для которого ищутся балансы </param>
+        /// <returns> Список объектов Balance </returns>
+        public async Task<List<Balance>> GetBalancesByFileId(int fileId)
         {
-            var balances = context.Balances.AsQueryable().Where(x => x.FileId == fileId).OrderBy(s => s.ExcelRowNumber);
+            // Получаем балансы из конкретного файла
+            var balances = await context.Balances.AsQueryable().Where(x => x.FileId == fileId).OrderBy(s => s.ExcelRowNumber).ToListAsync();
             return balances;
         }
 

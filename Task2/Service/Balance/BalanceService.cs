@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Task2.Model;
 using Task2.Repository;
@@ -30,9 +29,9 @@ namespace Task2.Service
             return await balanceRepository.GetBalancesAsync();
         }
 
-        public IQueryable<Balance> GetBalancesByFileId(int fileId)
+        public async Task<List<Balance>> GetBalancesByFileId(int fileId)
         {
-            return balanceRepository.GetBalancesByFileId(fileId);
+            return await balanceRepository.GetBalancesByFileId(fileId);
         }
 
         public async Task<Balance> InsertBalanceAsync(Balance balance)

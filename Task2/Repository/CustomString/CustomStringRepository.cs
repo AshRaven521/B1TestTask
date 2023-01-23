@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Task2.Model;
 using Task2.Data;
-using Microsoft.EntityFrameworkCore;
+using Task2.Model;
 
 namespace Task2.Repository
 {

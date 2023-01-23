@@ -47,35 +47,6 @@ namespace Task2.Repository
             }
         }
 
-        public async Task PostMultipleFileAsync(List<FileUploaded> fileData)
-        {
-            try
-            {
-                foreach (var file in fileData)
-                {
-                    var fileDetails = new FileDetails()
-                    {
-                        Id = 0,
-                        FileName = file.FileDetails.FileName,
-                        FileType = file.FileType,
-                    };
-
-                    using (var stream = new MemoryStream())
-                    {
-                        file.FileDetails.CopyTo(stream);
-                        fileDetails.FileData = stream.ToArray();
-                    }
-
-                    var result = context.FileDetails.Add(fileDetails);
-                }
-                await context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
         public async Task DownloadFileById(int Id)
         {
             try
@@ -103,7 +74,7 @@ namespace Task2.Repository
 
         public async Task<IEnumerable<SimpleFile>> GetFileNames()
         {
-            var files = await context.FileDetails.Select(x => new SimpleFile { Id = x.Id, FileName = x.FileName} ).ToListAsync();
+            var files = await context.FileDetails.Select(x => new SimpleFile { Id = x.Id, FileName = x.FileName }).ToListAsync();
             return files;
         }
     }

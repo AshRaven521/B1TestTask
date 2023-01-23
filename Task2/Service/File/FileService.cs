@@ -33,10 +33,5 @@ namespace Task2.Service
         {
             return await repository.PostFileAsync(fileData, fileType);
         }
-
-        public async Task PostMultipleFileAsync(List<FileUploaded> fileData)
-        {
-            await repository.PostMultipleFileAsync(fileData);
-        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Task2.Model;
 
@@ -13,6 +12,6 @@ namespace Task2.Service
         Task InsertBalancesAsync(List<Balance> balances);
         Task DeleteBalanceAsync(int id);
         Task SaveAsync();
-        IQueryable<Balance> GetBalancesByFileId(int fileId);
+        Task<List<Balance>> GetBalancesByFileId(int fileId);
     }
 }

@@ -25,8 +25,10 @@ namespace Task2
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            // Регистрируем контекст базы даных
             services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(connectionString));
 
+            // Регистрируем созданные нами сервисы
             services.AddScoped<IBalanceRepository, BalanceRepository>();
             services.AddScoped<IBalanceService, BalanceService>();
 
@@ -36,21 +38,13 @@ namespace Task2
             services.AddScoped<ICustomStringRepository, CustomStringRepository>();
             services.AddScoped<ICustomStringService, CustomStringService>();
 
+            // Добавляем корсы для фронтенда
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
-                //builder.WithOrigins("http://localhost:3000")
-                //       .AllowAnyMethod()
-                //       .AllowAnyHeader();
                 builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
             }));
-
-            //services.AddHttpsRedirection(options =>
-            //{
-            //    options.RedirectStatusCode = (int)HttpStatusCode.TemporaryRedirect;
-            //    options.HttpsPort = 5001;
-            //});
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -68,8 +62,6 @@ namespace Task2
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Task2 v1"));
             }
-
-            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
